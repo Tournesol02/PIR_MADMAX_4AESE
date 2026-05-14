@@ -40,6 +40,7 @@ Our tutors for this project were: Pascal ACCO, Mathieu PRADIN and Thierry ROCACH
 - [Charrette Piano](https://veloma.org/2022/10/05/la-charrette-version-montagne-ou-comment-transporter-250kg-a-velo-par-monts-et-par-vaux/)
 - [Cycle Analyst Grin](https://ebikes.ca/product-info/grin-products/cycle-analyst-3.html)
 
-<img src="https://s3.amazonaws.com/zotero.org/images/settings/group/6256675_200px.png" alt="Mad Max movie poster">
+
+![MadMax](Arbitrary/MADMAX.png)
 
 License: CC-BY-NC-SA 4.0
