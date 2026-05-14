@@ -1,0 +1,333 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{url}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{
+    Design and Implementation of a High-Power Motor Controller for Bicycles
+}
+
+%\maketitle
+
+
+\author{\IEEEauthorblockN{Hugo Abescat}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+abescat@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Karima Attar}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+karima.attar@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Brage Flønæs Johnsen}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+johnse@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Oskar Orvik}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+orvik@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Julien Pavillon}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+pavillon@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Nolan Reynier Nomer}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+reynier-nome@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Aleksander Taban}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+taban@insa-toulouse.fr}
+}
+
+\maketitle
+
+\begin{abstract}
+Electric bikes are becoming an increasingly attractive solution for transporting goods between short distances, 
+especially in city-wide infrastructures. However, most commercially available controllers rely on complex integrated 
+circuits making repair and local manufacturing difficult, particularly for organisations operating in 
+resource-constrained or low-tech environments. La Manufacture Autonome Décentralisée (LaMAD) is developing products 
+and solutions, particularly e-bikes, which are more repairable and sustainable. Previous studies have predominantly 
+focused on performance optimisation of Field Oriented Control (FOC) and trapezoidal commutation strategies, with limited 
+attention to repairability, component sourcing, and community-centred sustainability criteria. This project aims to 
+design, assemble, and develop a functional, low-tech and open-source motor controller for electric cargo bikes. The 
+current model uses an open-source motor control called VESC (Vedder Electronic Speed Controller) that allows precise 
+control of electric motors. The controller needs to be compatible with a VESC controller and easily locally repairable 
+by LaMAD. By exploring the inner workings of the VESC project, modelling of the physical systems and the Printed Circuit
+ Board, PCB, we investigated the ways we could do it in another way. We acquired a VESC controller to compare our system 
+ and a commercial product. Preliminary results demonstrate that the adapted VESC-based controller successfully drives 
+ the target motor under both commutation strategies, and that positional control is achievable with the current hardware
+  configuration. Security vulnerabilities related to open Bluetooth access were identified. These findings suggest that 
+  open-source, locally fabricated motor controllers can meet the functional requirements of electric cargo bikes while 
+  significantly improving repairability. 
+\end{abstract}
+
+\begin{IEEEkeywords}
+VESC Project, Brushless DC motor, Field Oriented Control, Trapezoidal commutation, Low-Tech, e-bike.
+\end{IEEEkeywords}
+
+\section{Introduction}
+The fast urbanization of global logistics has positioned electric cargo bikes as a primary solution. At the heart of 
+these vehicles is the motor controller. Current research and industry standards primarily focus on two methods of 
+commutation for the controller: Trapezoidal commutation and Field Oriented Control (FOC). 
+
+As motor controllers become smarter, they increasingly incorporate wireless connectivity for tuning and diagnostics. 
+Current research highlights that while Bluetooth Low Energy (BLE) and mobile app integration improve user experience, 
+they often introduce vulnerabilities. Open-source projects, in particular, must balance ease of access for community 
+developers with the need to secure the vehicle.
+
+We also argue the need for general public's safety when it comes to these bikes, as it could be a danger to the traffic.
+ This is especially true when it comes to vehicules carrying a substantial load. This needs to be considered by laMAD, 
+ where their responsibility and control begins and ends. Should there be a difference between the firmware loaded on a 
+ product from laMAD than what is publicly available? 
+
+
+\section{Related Work}
+
+\subsection{Modeling of BLDC Motor}
+The electromechanical model of a BLDC motor is foundational for understanding its behavior under different control 
+schemes. BLDC motors are categorized by their back-electromotive force (back-EMF) waveform: trapezoidal or sinusoidal. 
+This distinction is crucial, as the trapezoidal shape inherently leads to torque ripple when the supplied phase currents 
+are not perfectly aligned, directly influencing the choice and effectiveness of the control strategy 
+\cite{patil_analysis_2025}. For a BLDC motor with trapezoidal back-EMF, the electromagnetic torque is given by:
+\[
+T_e = \frac{e_a i_a + e_b i_b + e_c i_c}{\omega_m}
+\]
+where \( e_x \) is the back-EMF and \( i_x \) is the phase current \cite{li_quantitative_2019}. The classical d-q 
+reference frame model, ideal for sinusoidal machines, is less suitable for trapezoidal BLDC motors because it assumes 
+sinusoidal flux distribution. Phase-variable modeling in the natural (abc) frame is therefore more appropriate, as it 
+directly accounts for the non-sinusoidal, trapezoidal nature of the back-EMF and the associated harmonics 
+\cite{mohammd_taher_new_2021}.
+
+\subsection{Trapezoidal Commutation (Six-Step Control) for BLDC Motors}
+% Trapezoidal commutation, or six-step control, uses Hall-effect sensors to synchronize phase current switching every 
+% 120 electrical degrees. 
+Trapezoidal commutation, or Six-Step control, uses bipolar conduction, with two motor phases conducting at any time and 
+current commutation occurring every 120 electrical degrees \cite{gieras_modern_2023}. As commutation depends on rotor 
+position, Six-Step control requires either position sensors (e.g. Hall sensors, encoders, or resolvers) or sensorless 
+estimation based on back-EMF detection or observers \cite{gieras_modern_2023, gasc_conception_2004}.  This method is 
+renowned for its simplicity of implementation and low hardware cost \cite{bhatiya_bldc_2024}. It enables effective 
+torque control but introduces significant torque ripple during commutation events, especially under high load 
+\cite{jomsa-nga_torque_2024}. This ripple generates noise, increases mechanical stress, and reduces overall efficiency 
+\cite{mohammd_taher_new_2021}. Although PWM techniques can mitigate this ripple, they do not completely eliminate it 
+\cite{li_quantitative_2019}.
+
+\subsection{Field-Oriented Control (FOC) for BLDC Motors}
+FOC is a vector control strategy that decouples the stator flux and torque components. It transforms three-phase 
+currents into orthogonal \( I_d \) and \( I_q \) components, enabling precise torque control and significant ripple 
+reduction \cite{jomsa-nga_torque_2024}. FOC is particularly effective for BLDC motors with sinusoidal back-EMF but can 
+also be applied to trapezoidal back-EMF motors, albeit with less impressive ripple suppression results 
+\cite{li_quantitative_2019}. It requires greater computational power and more precise position sensors (e.g. encoders). 
+Comparative analysis shows that FOC yields a more stable stator current profile and significantly reduces torque 
+variations compared to trapezoidal control \cite{patil_analysis_2025}.
+
+\subsection{Comparative Analysis: FOC vs. Trapezoidal for Light Electric Vehicles}
+
+\subsubsection{Torque Ripple and User Comfort}
+Firstly, torque ripple can be reduced for both control methods by selecting appropriate motor parameters, such as the 
+number of stator slots and rotor poles \cite{gasc_conception_2004}.
+FOC substantially reduces torque ripple compared to Six-Step control, directly enhancing ride comfort and minimizing 
+vibrations. Experimental results show a torque ripple of \SI{18.38}{\percent} for FOC versus \SI{35.67}{\percent} for 
+Six-Step control at 500~rpm \cite{jomsa-nga_torque_2024}. 
+Commutation torque ripple (CTR), prominent in Six-Step control, can be specifically targeted and mitigated using 
+advanced control techniques like Model Predictive Control (MPC) while retaining the fundamental simplicity of 
+trapezoidal commutation \cite{mohammd_taher_new_2021}.
+
+\subsubsection{Energy Efficiency}
+FOC optimizes torque per ampere (MTPA), improving efficiency at low loads. Six-Step control exhibits lower switching 
+losses at high speeds \cite{li_quantitative_2019}.
+
+\subsubsection{Complexity, Cost, and Low-Tech Suitability}
+
+Six-Step control is inherently simpler, cheaper, and more robust, making it a prime candidate for low-tech applications. 
+Research focused on reducing propulsion system costs proposes simplified hardware topologies, such as 4-switch inverters 
+(instead of 6) coupled with direct current control strategies, maintaining acceptable performance while significantly 
+lowering hardware costs \cite{lee_advanced_2001}. FOC, while superior in performance, is more complex to implement and 
+carries higher hardware costs (sensors, processing power).
+
+\subsubsection{Dynamic Response}
+
+FOC provides faster response times and better load disturbance rejection \cite{jomsa-nga_torque_2024}.
+
+
+\section{Research gap}
+Despite this progress, limited research has examined the adaptation of open-source motor controllers to LowTech and 
+repairability constraints. To date, researchers have not addressed the challenge of designing a controller that can 
+be locally fabricated, repaired with standard components, and secured against unauthorised wireless access requirements 
+that are critical for decentralised, community-operated fleets.
+
+\section{The aim of the study}
+This report presents the design and implementation of a VESC-based motor controller tailored to the needs of the 
+Manufacture Autonome Décentralisée (MAD), an organisation operating electric cargo bikes and freight tricycles. 
+We aim to focus on adapting the VESC open-source firmware to support both FOC and trapezoidal commutation, integrating 
+positional control, and addressing Bluetooth security, while prioritising local manufacturability at INSA Toulouse.
+
+\section{Software and Connectivity}
+
+\subsection{BLE Compatibility With the VESC}
+
+\subsubsection{First Experiment}
+VESC-controllers are not necessarily equipped with Bluetooth-modules by default. Often, it is necessary to add a 
+BLE-module. A standard HC-05 bluetooth-module compatible with arduino is a great way to send and recieve 
+bluetooth-packets from a host, e.g. a mobile phone, via a bridge translating the bluetooth packets to the UART protocol. 
+This could be demonstrated using a ESP8622's standard library with said module, by letting us send characters from one 
+device to another.
+
+\subsubsection{HC-05 and the VESC}
+By flashing the VESC firmware on a discovery-card and connecting the HC-05 module to the PB10 and PB11-pins, which are 
+the Rx and Tx-pins for the STM32F4xx chip, we discovered that the setup for the bluetooth module was not available in 
+the VESC tool. The inherent BLE capabilities is an important limitation to consider when designing a VESC system.
+We learned therefore that the HC-05 is not originally adapted for BLE. The need for a bridge also adds on complexity 
+and cost, in the form of extra components and another device to maintain the code of. For the future, choosing a 
+bluetooth module supporting BLE will be the easiest solution. Preferably a module fitting the communication connector on
+ the cheap FOCer project\cite{b1} could facilitate the relevancy of the PCB project with a microcontroller.
+
+\subsubsection{BLE Vulnerability}
+Bluetooth could be a vulnerability to a VESC if it is to be used as a controller in real-time, as the controller could 
+be jammed. Our test with the Flipper Zero shows the disfunctionnality of Bluetooth with different use cases. 
+We experienced with the jamming of a bluetooth speaker that the music completely stopped. It could also be investigated 
+how the connection to the VESC could be modified using the vesc tool. We will touch more on the accessability of the 
+code within the vesc tool sooner. 
+
+\subsection{Code integrity}
+\subsubsection{Context}
+As the project is open source, and the code is freely accessible, there should be no reason to hide the code. It could 
+however be reasonable to protect the code from changes which could hurt other people. Changing following parameters 
+should at least come with a disclaimer and clearly state the dangers possible by proceeding with said changes. We 
+have in mind the maximum speed permitted and the power available to the motors.
+
+\subsubsection{LispBM extraction}
+We caugth word that the lisp code for the VESC used by Maillon mobility was easy to extract. By building an older 
+firmware with the Maillon mobility software, we observed this by going to the lispBM tab and clicking read. It's up to 
+laMAD if they would like to reinforce this mechanism. A modification on a parameter and then clicking upload allowed 
+us to easily change the speed limit. This could bring up a public danger. This raises questions on the use of laMADs 
+equipment which is in a traffic friendly manner.
+
+\subsubsection{LispBM Code}
+When we flashed newer firmware from the project made by Benjamin Vedder\cite{b1}, we also observed some difficulties in 
+uploading the lispBM script taken from the one on firmware version 6.06. This could indicate that there needs to be 
+further maintenance of the code in order to get the software up to speed. This needs to be documented better for someone
+ to continue the project. This could be a good investment for laMAD as well in the context of training for the people 
+ working on the motor control part of the e-bike.
+
+This documentation could be as simple as referencing the relevant parts of the lispBM documentation \cite{b2}
+
+\subsubsection{Proposed Solution}
+This risk could be patched by developing a VESC application for the VESC controller or using a binary. This is a 
+solution which is less open source, but which is make unlawful use of the material harder. The application could be 
+created using C and use an algorithm known by laMAD in order to securise the access to someone to change the parameters 
+only if they are laMAD certified personnel. This encryption would preferably be reduced to the most essential settings 
+in order to align with what our impression of the philosophy of laMAD would be.
+
+
+
+\subsection{VESC Compiling}
+As mentionned, we have been able to compile the VESC tool and the VESC firmware. This firmware has been put onto an 
+STM32F4xx Discovery card. This poses several obstacles for our progress on the topic of cybersecurity. We will however 
+summarise what we have learned for you and propose some additional work for the future. The challenges we encountered 
+were the following: The lack of bluetooth capabilities. We did not have a module with BLE either. We had access to a 
+HC-05 module, but that only allows for a normal bluetooth protocol and would require further work on a bridge to UART 
+by using an esp8622 that we had as well. We propose that the next group has access to a VESC controller from the 
+beginning, as well as a motor we could control. This could be in cooperation with laMAD, as laMAD could propose 
+some models they're interested in.
+
+We also found that the information on the VESC is scattered around the internet. The ressources is also sometimes 
+based on a debian-based linux system which adds more work for someone using another distribution of linux. This could 
+hinder the implementation facility for new users. We struggeled particularly with the Qt packages for positioning and 
+gamepad. We would therefore recommend the use of a debian-based linux system for the computer working with the VESC 
+for the laMAD associates.
+
+
+\section{Discussion}
+This project could be seen as an introduction to the VESC project for someone who don't know about it from beforehand, 
+the challenges the new users face during setup, as well as a demand for clear expectations concerning documentation 
+on the subject. The project laMAD is leading should probably not be a fork of the project, as the project is still 
+in development.
+
+As a final note, this proved to be a project which could easily be developed into several different projects in 
+different fields. Some projects could be continued later on as a different PIR subject, other could be proposed to 
+later years in different spesialisations like TLS SEC, ESPE. Our thoughts on the following projects that could be 
+explored are the following.
+
+The fabrication line for electronics is globalised. This is okay in a stable world, but it could be a problem in a world 
+full of instability, be it war, blockages, or tarifs. The idea of opening a spesialisation in cooperation with AIME came 
+up as an idea.
+
+For TLS SEC the subject could be the design for a fitting mechanism to restrict certain priveligies to certified 
+personnel that could be used in the C programming language. Later down the line we could also see the possibility to 
+analyse the Bluetooth frames in order to manipulate them in order to change important parameters.
+
+The continuation on the PCB could be a subject fitting an ESPE spesialisation.
+
+The proposition of and supply of a vesc system to play with and troubleshoot could be a good rule of thumb, which 
+allows for a quicker start and gives among other things an idea of the budget and the supply line used by a entity 
+in the sector. Proposing a visit could also be one way to familiarise students with the association.
+
+What should be a clear conclusion from our test with the jammer is that a controlles based on Bluetooth alone should be 
+avoided when possible and practical. Examples where this could be relevant include electric skateboards, as cables could 
+impose a tripping hazard. There, an encapsulation of an encrypted control frame could be an thought. 
+
+\section{Results}
+
+\section{Conclusion/Summary}
+
+%\begin{figure}[htbp]
+%%\centerline{\includegraphics{fig1.png}}
+%caption{Example of a figure caption.}
+%\label{fig}
+%\end{figure}
+
+%Figure Labels: Use 8 point Times New Roman for Figure labels. Use words 
+%rather than symbols or abbreviations when writing Figure axis labels to 
+%avoid confusing the reader. As an example, write the quantity 
+%``Magnetization'', or ``Magnetization, M'', not just ``M''. If including 
+%units in the label, present them within parentheses. Do not label axes only 
+%with units. In the example, write ``Magnetization (A/m)'' or ``Magnetization 
+%\{A[m(1)]\}'', not just ``A/m''. Do not label axes with a ratio of 
+%quantities and units. For example, write ``Temperature (K)'', not 
+%``Temperature/K''.
+
+\section*{Acknowledgment}
+
+The preferred spelling of the word ``acknowledgment'' in America is without 
+an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B. 
+G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
+acknowledgments in the unnumbered footnote on the first page.
+
+%\section*{References}
+
+%Please number citations consecutively within brackets \cite{b1}. The 
+%sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference 
+%number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at 
+%the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
+
+\bibliographystyle{IEEEtran}
+\bibliography{PIR_MadMax3}
+
+
+\end{document}

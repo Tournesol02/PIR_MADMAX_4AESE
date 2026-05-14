@@ -1,0 +1,14 @@
+\section{Aim and Research Objectives}
+This work presents the design and implementation of a motor control system for electric bicycles and cargo transport applications developed within the context of the Manufacture Autonome Décentralisée (MAD) initiative at INSA Toulouse. The main objective is to develop a modular, open-source, and locally manufacturable control architecture adapted to low-cost electric mobility systems.
+
+To achieve this, the project is structured into four main technical contributions.
+
+First, a low-cost motor controller is designed based on a six-step (trapezoidal) commutation strategy. The objective is to eliminate the need for a microcontroller by relying exclusively on discrete MOSFETs and standard electronic components, thereby improving repairability, accessibility, and ease of local manufacturing.
+
+Second, a high-performance controller based on Field-Oriented Control (FOC) is developed using an STM32 microcontroller platform. This implementation leverages and adapts the open-source VESC firmware to ensure compatibility with the selected hardware while enabling advanced motor control capabilities.
+
+Third, the security of the wireless communication interface is investigated, with a focus on Bluetooth Low Energy (BLE) vulnerabilities. A Flipper Zero device is used as a diagnostic tool to evaluate potential attack surfaces and identify weaknesses in the communication layer.
+
+Finally, a dynamic model of the bicycle-cargo system is developed to improve rider experience. The objective is to minimize the perceived additional effort when towing a cargo cart. This is achieved through a PID-based (Proportional-Integral-Derivative) control strategy combined with distance sensing, allowing adaptive assistance based on system dynamics.
+
+
