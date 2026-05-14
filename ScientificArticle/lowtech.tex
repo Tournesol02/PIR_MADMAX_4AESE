@@ -1,0 +1,102 @@
+\section{Hardware-Based Six-Step Commutation Controller}
+\label{sec:sixstep}
+
+The basis of this section is the replacement of components who are highly complex, technical and/or are dependant on global supply chains to manufacture. An additional goal is, as for the preceding section, to make a repairable, reliable and manufacturable circuit, this time using these more basic components, based on open-source principles. The controller needs to be performant enough to drive one of the two electric motors used on the LaMAD (La Manufacture Autonome Décentralisée) bicycle cargo trailer.\cite{noauthor_ddf-39_nodate}
+
+\subsection{Constraints}
+The electric motors used are supplied using 36/48 Volts at 1000 W. This means that the six-step chopper transistors need to be able to supply up to 28 Amperes of current. This is a lot, considering our restrictions. Additionally, the heat will need to be managed, which may be an even bigger challenge than the current.
+
+\subsection{Semiconductor facilities in Occitanie}
+The most challenging part of this section is the replacement of semiconductor parts, as these are the most complicated parts to manufacture. Luckily, the city in which the team is located, Toulouse, offers possibilities in semiconductor manufacturing. This may not be a complete list, but the following were identified:
+
+\begin{enumerate}
+	\item ST Microelectronics Labège-Innopôle (formerly Exagan, formerly CEA-Leti) 
+	\item LAAS-CNRS (Laboratoire d'Analyse et d'Architecture des Systèmes - Centre National des Recherches Scientifiques) semiconductor lab
+	\item AIME (Atelier Interuniversitaire de Micro-nano Électronique) on-campus at INSA Toulouse
+\end{enumerate}
+
+ST Microelectronics at Labège designs and manufactures gallium nitride transistors under the commercial designation STPOWER PowerGaN, this confirmed by a colleague who visited the plant and engineering teams in late 2022, Etienne Gadefait. Gallium nitride transistors are great for high speed power electronics % ref https://www.st.com/en/power-transistors/powergan.html
+but this is a very recent technology, and none of the big material players in GaN are European, let alone French or Occitanian (US, China, Japan and India are predominant). % ref https://us.metoree.com/categories/7137/
+ Because of this and very high costs, we chose to consider this a supply chain-constrained technology, which could not be relied on in a non-global future, and we moved on to other options.
+ 
+The LAAS semiconductor lab was deemed less reachable and more technologically advanced than the AIME semiconductor lab, as we were told they mostly did research on carbon nanotubes and other fancy semiconductor materials. We therefore chose not to contact the LAAS, and 
+
+The AIME is a small research lab located on our campus. Their capabilities and projects were not publicly available, so we decided to contact them. We met two researchers Mr. Tan and Mr. Lincelles to enquire about the manufacturability of certain components, and eventual costs. The AIME specialises in logic circuits, and has not developed any power components at least a decade. Therefore, the research teams have not maintained any know-how in power semiconductors. However, they were very interested in developing this field in their lab, and came with a proposal to start, based on their existing knowledge. Here are some of AIME's capabilities and prices:
+
+\begin{table}[htbp]
+	\caption{AIME capabilities}
+	\label{tab:AIME_capabilities}
+	\centering
+	\begin{tabular}{lcc}
+		\toprule
+		\textbf{Proposal or capability} & \textbf{Value} & \textbf{Price, if relevant} \\
+		\midrule
+		Silicon wafer & 2'' ($\sim$50mm) & 10 € \\
+		Epitaxial "fancy" wafer & 2'' ($\sim$50mm) & 100-200 €   \\
+		AIME-made lithography mask &  10µm canal width & 300 € \\
+		Lab rental & 1 day & $\sim$2000 € \\
+		Transistor canal width & $\sim$1 µm \\
+		Drain-source on resistance & 1 k\textOmega \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+The proposed project was based on their logic transistors, scaled up not in size, but in number. As seen in the table above, one of their small logic transistors has a resistance of:
+
+\begin{equation}
+	R_{DS_{on}} \approx 1\ k\Omega
+\end{equation}
+
+As we need a transistor capable of passing 28 Amperes of current, this resistance is unacceptable. Therefore, they proposed to put a great number of transistors in parallel to reduce $R_{DS_{on}}$, on a big surface to better distribute and dissipate the heat (the heat calculations were not made). We can also note here that AIME does not have packaging technology to dissipate high head loads, which could be resolved using external specialist companies (expensive) or making a very thermally efficient transistor. The current also makes the attachment of wires more complicated, as the general relation (not taking into consideration the skin effect in larger diameters) they gave me gives:
+
+\begin{equation}
+	1\ \frac{mA}{\mu m\ diameter} \Rightarrow diameter =  2,8 cm
+\end{equation}
+
+Which is extremely unrealistic for a small component and needs to be investigated further. The second problem is the voltage, as the small signal transistors they have are made for lower voltages. Therefore, we needed a thicker MOSFET with a thicker n- drift layer between the drain and source to prevent breakdown, which results in us needing a fancy and expensive epitaxial wafer instead of a cheap one. This results in another problem, an even higher Drain-source on resistance $R_{DS_{on}}$, multiplying the already great number of transistors by a good factor. At the end, this is the project they proposed:
+
+\begin{table}[htbp]
+\caption{The project proposed by the AIME}
+\label{tab:AIME_project}
+\centering
+\begin{tabular}{lcc}
+\toprule
+\textbf{Proposal or capability} & \textbf{Value} & \textbf{Price, if relevant} \\
+\midrule
+Transistor count & $\sim$400 000 & \\
+Die size & 1-2 cm$^2$ & \\
+Wafer & 2'' ($\sim$50mm) epitaxial & 100-200 €  \\
+Dies per wafer & 1 & 100-200 € per die \\
+Lab rental & subsidised &  reason: academia  \\
+Masks needed & 4 & 1200 € \\
+Dies per set of masks & $>$ 1000 dies & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+These costs are much larger than what we have for this project, but are not insurmountable for a department like the GEI. This project also needs a lot of time or more people to be made, more than what we have at our disposal. The researchers were very interested in collaborating on such a project in the future, and considered it very strongly as a replacement for the current AIME project for the 5th year PTP Energie students at INSA Toulouse (currently a CO2 sensor), with GEI's backing and funding. 
+
+The complexity of manufacturing power transistors made us go for the strategy of choosing readily available and cheap components.
+
+
+\subsection{Replacing an IC}
+
+Replacing the IC of a motor controller requires using traditional logic gates. This approach can be done in several methods. The AIME would easily be able to produce such a circuit at a relatively low cost, but this is neither easily accessible nor repairable. We therefore needed to use another form of logic gates. The simplest form of gates are diode gates, which use two diodes to make either an AND or OR-gate. They cannot make NOT-gates, which need a CMOS-cell (two transistors). We continued by simulating this in LTSpice XVII, based on Mr. Rocacher's circuits. This circuit ended up needing 4 AND-gates, 2 OR-gates and 1 NOT-gate (CMOS cell) per phase, with additional transistors to compensate for voltage lost at the diodes, as well as one additional OR-gate. The total would be like this :
+
+\begin{table}[htbp]
+	\caption{Minimum number of diodes and transistors needed}
+	\label{tab:decompte}
+	\centering
+	\begin{tabular}{lccc}
+		\toprule
+		\textbf{Gate} & Number of gates & \textbf{Number of diodes} & \textbf{Number of transistors} \\
+		\midrule
+		AND & 12  & 24 & 0 \\
+		OR & 7 & 14 & 0 \\
+		NOT & 3 & 0 & 6\\
+		\bottomrule
+		Total & & 38 & 6
+	\end{tabular}
+\end{table}
+
+This is a considerable number of diodes and transistors, but would make the circuit easily repairable and replaceable.

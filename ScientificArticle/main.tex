@@ -1,0 +1,132 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage[UKenglish]{babel}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{placeins}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{textgreek}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{positioning}
+
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{
+    Design and Implementation of a High-Power Motor Controller for Bicycles
+}
+
+
+\author{\IEEEauthorblockN{Hugo Abescat}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+abescat@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Karima Attar}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+karima.attar@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Brage Flønæs Johnsen}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+johnse@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Oskar Orvik}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+orvik@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Julien Pavillon}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+pavillon@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Nolan Reynier Nomer}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+reynier-nome@insa-toulouse.fr}
+\and
+\IEEEauthorblockN{Aleksander Taban}
+\IEEEauthorblockA{\textit{GEI Department} \\
+\textit{INSA Toulouse}\\
+Toulouse, France \\
+taban@insa-toulouse.fr}
+}
+
+\maketitle
+
+\begin{abstract}
+Electric bikes are becoming an increasingly attractive solution for transporting goods between short distances, 
+especially in city-wide infrastructures. However, most commercially available controllers rely on complex integrated 
+circuits making repair and local manufacturing difficult, particularly for organisations operating in 
+resource-constrained or low-tech environments. The Manufacture Autonome Décentralisée (MAD) is developing products 
+and solutions, particularly e-bikes, which are more repairable and sustainable. Previous studies have predominantly 
+focused on performance optimisation of Field Oriented Control (FOC) and trapezoidal commutation strategies, with limited 
+attention to repairability, component sourcing, and community-centred sustainability criteria. This project aims to 
+design, assemble, and develop a functional, low-tech and open-source motor controller for electric cargo bikes. The 
+current model uses an open-source motor control called VESC (Vedder Electronic Speed Controller) that allows precise 
+control of electric motors. The controller needs to be compatible with a VESC controller and easily locally repairable 
+by the MAD. By exploring the inner workings of the VESC project, modelling of the physical systems and the Printed 
+Circuit Board (PCB) we investigated the ways we could do it in another way. We acquired a VESC controller to compare our 
+system  and a commercial product. Preliminary results demonstrate that the adapted VESC-based controller successfully 
+drives the target motor under both commutation strategies, and that positional control is achievable with the current 
+hardware configuration. Security vulnerabilities related to open Bluetooth access were identified. These findings 
+suggest that open-source, locally fabricated motor controllers can meet the functional requirements of electric cargo 
+bikes while significantly improving repairability. 
+\end{abstract}
+
+\begin{IEEEkeywords}
+VESC, Brushless DC motor, Field Oriented Control, Trapezoidal commutation, Low-Tech, PID-Control.
+\end{IEEEkeywords}
+
+
+%% On découpe le projet pour faciliter le travail en commun
+% Début
+\input{intro.tex}
+\input{related.tex}
+\input{gap.tex}
+\input{aim.tex}
+
+% Nos parties
+\input{foc.tex}
+\input{lowtech.tex}
+\input{logiciel.tex}
+\input{modelisation.tex}
+
+% Fin
+\input{resultats.tex}
+\input{discussion.tex}
+\input{futur.tex}
+\input{conclusion.tex}
+\input{remerciements.tex}
+\input{IA.tex}
+
+%Please number citations consecutively within brackets \cite{b1}. The 
+%sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference 
+%number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at 
+%the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
+
+\bibliographystyle{IEEEtran}
+\bibliography{PIR_MadMax3}
+
+
+\end{document}
