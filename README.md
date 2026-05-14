@@ -19,14 +19,14 @@ Our tutors for this project were: Pascal ACCO, Mathieu PRADIN and Thierry ROCACH
 
 ## Collaborators
 
-[ALK] TABAN Aleksander
-[JUL] PAVILLON Julien
-[OSK] ORVIK Oskar
-[BRA] JOHNSEN Brage Flønæs
-[KAR] ATTAR KARIMA
-[NOL] Nolan Reynier Nomer
-[HUG] ABESCAT Hugo
-[PA] Pascal Acco
+- [ALK] TABAN Aleksander
+- [JUL] PAVILLON Julien
+- [OSK] ORVIK Oskar
+- [BRA] JOHNSEN Brage Flønæs
+- [KAR] ATTAR KARIMA
+- [NOL] Nolan Reynier Nomer
+- [HUG] ABESCAT Hugo
+- [PA] Pascal Acco
 
 
 ## Sources and links:
