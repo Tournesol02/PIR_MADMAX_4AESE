@@ -4,7 +4,7 @@
 
 The PIR is an Initiation to research project done in fourth year at INSA Toulouse. 
 
-Our group was tasked with the further development aswell as exeprimenting with electric bikes and their open source application. Today, many e-bikes rely on closed-source systems, making the repair and maintenance of microcontrollers and integrated circuits difficult for users, who often depend on the manufacturer’s engineers for support.
+Our group was tasked with the further development aswell as experimenting with electric bikes and their open source application. Today, many e-bikes rely on closed-source systems, making the repair and maintenance of microcontrollers and integrated circuits difficult for users, who often depend on the manufacturer’s engineers for support.
 
 The MAD is a non-profit organization that aims to design practical e-bikes for everyday use while promoting repairability and user autonomy. Their goal is to enable users to maintain and repair their own bikes instead of relying exclusively on professional mechanics.
 
